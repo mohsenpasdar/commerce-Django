@@ -119,6 +119,17 @@ def listing(request, listing_id):
     else:
         current_bid = listing.starting_bid
 
+    # Check if the listing is closed:
+    if listing.status == 'closed':
+        if listing.winner == request.user:
+            winner_message = 'Congratulations! You won this auction!'
+        elif listing.winner and request.user == listing.seller:
+            winner_message = f"Congratulations! Your listing has been sold to {listing.winner.username} for {current_bid}!"
+        elif listing.winner:
+            winner_message = f"{listing.winner.username} won this auction."
+        else:
+            winner_message = 'No one won this auction.'
+        return render(request, 'auctions/listing.html', {'listing': listing, 'current_bid': current_bid, 'winner_message': winner_message})
     # Handle form submission
     if request.method == 'POST':
         # Check that the user is not the creator of the listing

@@ -10,6 +10,14 @@
     <p>{{ listing.description }}</p>
     <p>Current bid: {{current_bid}}</p>
 
+    {% if winner_message %}
+        <div class="messages">
+            <div class="alert alert-{{ message.tags }}">
+                {{ winner_message }}
+            </div>
+        </div>
+    {% endif %}
+
     {% if bid_form %}
         <form method="post">
         {% csrf_token %}
@@ -28,7 +36,7 @@
         </div>
     {% endif %}
 
-    {% if request.user == listing.seller %}
+    {% if request.user == listing.seller and listing.status == 'active' %}
         <form method="POST" action="{% url 'close_bid' listing_id=listing.id %}">
             {% csrf_token %}
             <button type="submit" class="btn btn-primary">Close Bid</button>
