@@ -110,6 +110,19 @@ def listing(request, listing_id):
     # Retrieve the listing from the database
     listing = get_object_or_404(AuctionListing, pk=listing_id)
 
+    # Check if the user is watching the listing
+    in_watchlist = listing.watchlist.filter(id=request.user.id).exists()
+
+    if request.method == 'POST' and 'watchlist' in request.POST:
+        # Toggle the listing's watchlist status for the current user
+        if in_watchlist:
+            listing.watchlist.remove(request.user)
+        else:
+            listing.watchlist.add(request.user)
+
+        # Redirect back to the listing page
+        return redirect('listing', listing_id=listing_id)
+
     # Retrieve the highest bid for the listing
     highest_bid = Bid.objects.filter(listing=listing).order_by('-amount').first()
 
@@ -171,7 +184,8 @@ def listing(request, listing_id):
         bid_form = None
 
     # Render the template with the listing information and bid form
-    return render(request, 'auctions/listing.html', {'listing': listing, 'current_bid': current_bid, 'bid_form': bid_form})
+    return render(request, 'auctions/listing.html', {'listing': listing, 'current_bid': current_bid, 'bid_form': bid_form, 'in_watchlist': in_watchlist})
+
 
 @login_required
 def close_bid(request, listing_id):

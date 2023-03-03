@@ -1,11 +1,23 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-  <h2>{{ listing.title }}</h2>
+    <h2>{{ listing.title }}</h2>
 
-  {% if listing.image_url %}
-    <img src="{{ listing.image_url }}" alt="{{ listing.title }} image">
-  {% endif %}
+    {% if listing.image_url %}
+        <img src="{{ listing.image_url }}" alt="{{ listing.title }} image">
+    {% endif %}
+
+    {% if in_watchlist %}
+        <form action="{% url 'listing' listing.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" name="watchlist" class="btn btn-primary">Remove from Watchlist</button>
+        </form>
+    {% else %}
+        <form action="{% url 'listing' listing.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" name="watchlist" class="btn btn-primary">Add to Watchlist</button>
+        </form>
+    {% endif %}
 
     <p>{{ listing.description }}</p>
     <p>Current bid: {{current_bid}}</p>
