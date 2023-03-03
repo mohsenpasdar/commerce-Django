@@ -5,10 +5,11 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 
 class User(AbstractUser):
-    pass
+    id = models.BigAutoField(primary_key=True)
 
 
 class AuctionListing(models.Model):
+    id = models.AutoField(primary_key=True)
     STATUS_CHOICES = (
         ('active', 'Active'),
         ('closed', 'Closed'),
@@ -61,6 +62,7 @@ class AuctionListing(models.Model):
 
 
 class Bid(models.Model):
+    id = models.AutoField(primary_key=True)
     listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name='bids')
     bidder = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(0.01)])
@@ -68,3 +70,12 @@ class Bid(models.Model):
 
     def __str__(self):
         return f'Bid of {self.amount} by {self.bidder.username} on {self.listing.title}'
+    
+
+class WatchlistItem(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username}'s Watchlist Item: {self.listing.title}"
