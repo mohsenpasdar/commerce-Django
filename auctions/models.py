@@ -43,6 +43,7 @@ class AuctionListing(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     winner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='won_auctions')
     seller = models.ForeignKey(User, on_delete=models.CASCADE)
+    watchlist = models.ManyToManyField(User, blank=True, related_name="watchlist")
 
     def __str__(self):
         return self.title
@@ -70,12 +71,3 @@ class Bid(models.Model):
 
     def __str__(self):
         return f'Bid of {self.amount} by {self.bidder.username} on {self.listing.title}'
-    
-
-class WatchlistItem(models.Model):
-    id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.user.username}'s Watchlist Item: {self.listing.title}"
