@@ -7,18 +7,6 @@
         <img src="{{ listing.image_url }}" alt="{{ listing.title }} image">
     {% endif %}
 
-    {% if in_watchlist %}
-        <form action="{% url 'listing' listing.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" name="watchlist" class="btn btn-primary">Remove from Watchlist</button>
-        </form>
-    {% else %}
-        <form action="{% url 'listing' listing.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" name="watchlist" class="btn btn-primary">Add to Watchlist</button>
-        </form>
-    {% endif %}
-
     <p>{{ listing.description }}</p>
     <p>Current bid: {{current_bid}}</p>
 
@@ -38,6 +26,27 @@
         </form>
     {% endif %}
 
+    {% if request.user == listing.seller and listing.status == 'active' %}
+        <form method="POST" action="{% url 'close_bid' listing_id=listing.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Close Bid</button>
+        </form>
+    {% endif %}
+
+    {% if request.user.is_authenticated %}
+        {% if in_watchlist %}
+            <form action="{% url 'listing' listing.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" name="watchlist" class="btn btn-primary watchlist">Remove from Watchlist</button>
+            </form>
+        {% else %}
+            <form action="{% url 'listing' listing.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" name="watchlist" class="btn btn-primary watchlist">Add to Watchlist</button>
+            </form>
+        {% endif %}
+    {% endif %}
+
     {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -46,13 +55,6 @@
                 </div>
             {% endfor %}
         </div>
-    {% endif %}
-
-    {% if request.user == listing.seller and listing.status == 'active' %}
-        <form method="POST" action="{% url 'close_bid' listing_id=listing.id %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Close Bid</button>
-        </form>
     {% endif %}
 
 {% endblock %}

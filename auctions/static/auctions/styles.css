@@ -12,3 +12,7 @@ body {
   box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
   background-color: #f5f5f5;
 }
+
+.watchlist {
+  margin-top: 10px;
+}

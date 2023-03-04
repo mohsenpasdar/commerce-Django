@@ -27,7 +27,7 @@ def index(request):
             'current_bid': current_bid
         })
     
-    context = {'listings_with_bids': listings_with_bids}
+    context = {'listings_with_bids': listings_with_bids, 'header': 'Active Listings'}
     return render(request, 'auctions/index.html', context)
 
 
@@ -213,3 +213,25 @@ def close_bid(request, listing_id):
 
     # Render the template with the listing information and the winning bid information
     return render(request, 'auctions/close_bid.html', {'listing': listing, 'winning_bid': winning_bid, 'winning_bidder': winning_bidder})
+
+
+@login_required
+def watchlist(request):
+    user = request.user
+    watchlist_listings = AuctionListing.objects.filter(watchlist=user)
+    listings_with_bids = []
+    
+    for listing in watchlist_listings:
+        highest_bid = Bid.objects.filter(listing=listing).order_by('-amount').first()
+        if highest_bid:
+            current_bid = highest_bid.amount
+        else:
+            current_bid = listing.starting_bid
+        
+        listings_with_bids.append({
+            'listing': listing,
+            'current_bid': current_bid
+        })
+    
+    context = {'listings_with_bids': listings_with_bids, 'header': 'Watchlist'}
+    return render(request, 'auctions/index.html', context)
