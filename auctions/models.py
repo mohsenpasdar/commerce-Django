@@ -37,7 +37,7 @@ class AuctionListing(models.Model):
         ('VEHICLES', 'Vehicles & Automotive'),
     )
     CATEGORY_CHOICES = sorted(CATEGORY_CHOICES, key=lambda x: x[1] if x[0] != 'OTHER' else 'ZZZ')
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, blank=True, null=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='OTHER')
     date_created = models.DateTimeField(auto_now_add=True)
     date_ended = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
