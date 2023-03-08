@@ -235,3 +235,28 @@ def watchlist(request):
     
     context = {'listings_with_bids': listings_with_bids, 'header': 'Watchlist'}
     return render(request, 'auctions/index.html', context)
+
+
+def category_list(request):
+    categories = AuctionListing.objects.filter(status='active').order_by().values_list('category', flat=True).distinct()
+    return render(request, 'auctions/category_list.html', {'categories': categories})
+
+
+def category(request, category_name):
+    active_listings = AuctionListing.objects.filter(category=category_name, status='active')
+    listings_with_bids = []
+    
+    for listing in active_listings:
+        highest_bid = Bid.objects.filter(listing=listing).order_by('-amount').first()
+        if highest_bid:
+            current_bid = highest_bid.amount
+        else:
+            current_bid = listing.starting_bid
+        
+        listings_with_bids.append({
+            'listing': listing,
+            'current_bid': current_bid
+        })
+    
+    context = {'listings_with_bids': listings_with_bids, 'header': f'{category_name} Listings'}
+    return render(request, 'auctions/index.html', context)
